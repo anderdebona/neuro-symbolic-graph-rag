@@ -2,8 +2,11 @@
   "name": "neuro-symbolic-graph-rag",
   "version": "1.0.0",
   "description": "PhD-Grade Neuro-Symbolic AI Platform Combining Knowledge Graphs, Vector RAG & Deterministic Symbolic Reasoning",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "type": "module",
+  "bin": {
+    "neuro-symbolic-rag": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
