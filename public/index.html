@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuro-Symbolic GraphRAG Engine | Prof. Dr. Ander Debona</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --panel: #111827;
+      --accent: #8b5cf6;
+      --accent-glow: rgba(139, 92, 246, 0.4);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f3f4f6;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 2rem; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; }
+    .btn { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    pre { background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border); padding: 1rem; border-radius: 0.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #a7f3d0; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧠 Neuro-Symbolic GraphRAG Engine</h1>
+    <div>Prof. Dr. Ander Debona • Artificial Intelligence PhD Suite</div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Neuro-Symbolic Query Input</h2>
+      <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 0.5rem; margin-bottom: 1rem;">
+        Query neural vector space while enforcing deterministic symbolic Knowledge Graph constraints.
+      </p>
+      <input type="text" id="queryInput" value="What is the relation between Raft and Consensus?" style="width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid var(--border); color: white; border-radius: 0.5rem; margin-bottom: 1rem;">
+      <button class="btn" onclick="runReasoning()">Execute Hybrid Reasoner</button>
+    </div>
+
+    <div class="panel">
+      <h2>Reasoner Output & Hallucination Check</h2>
+      <div id="confidence" style="margin-top: 0.5rem; font-weight: 700; color: var(--success);">Confidence Score: -</div>
+      <pre id="output">Run reasoning to see Neuro-Symbolic facts and verification...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function runReasoning() {
+      const query = document.getElementById('queryInput').value;
+      const res = await fetch('/api/reason', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+      const data = await res.json();
+      document.getElementById('confidence').innerText = `Confidence Score: ${(data.confidenceScore * 100).toFixed(1)}% (Deterministic Graph Validated)`;
+      document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+    }
+
+    window.onload = runReasoning;
+  </script>
+</body>
+</html>
