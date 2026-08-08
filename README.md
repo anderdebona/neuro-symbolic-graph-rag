@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Artificial Intelligence](https://img.shields.io/badge/AI-Neuro--Symbolic-purple)](https://en.wikipedia.org/wiki/Neuro-symbolic_AI)
 
-**Author:** Prof. Dr. Ander Debona (Department of Computer Science & Artificial Intelligence)
+**Author:** anderdebona (Department of Computer Science & Artificial Intelligence)
 
 ---
 
@@ -68,7 +68,7 @@ npm test
 
 ```bibtex
 @software{debona2026neurosymbolic,
-  author = {Debona, Ander},
+  author = {anderdebona},
   title = {Neuro-Symbolic GraphRAG Engine},
   year = {2026},
   publisher = {GitHub},
