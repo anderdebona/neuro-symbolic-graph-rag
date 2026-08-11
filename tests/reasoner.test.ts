@@ -82,3 +82,23 @@ describe('Explainability Engine', () => {
     expect(formatted).toContain('Answer: Answer');
   });
 });
+
+import { SymbolicRuleEngine } from '../src/symbolic/rule-engine.js';
+
+describe('Symbolic Rule Engine', () => {
+  it('should evaluate rules against facts', () => {
+    const engine = new SymbolicRuleEngine();
+    engine.addRule('R1', (f) => (f.get('temp') || 0) > 100, 'ALERT_OVERHEAT', 1);
+    engine.addRule('R2', (f) => (f.get('temp') || 0) < 0, 'ALERT_FREEZE', 2);
+    const facts = new Map([['temp', 150]]);
+    const result = engine.evaluate(facts);
+    expect(result.firedRules).toContain('R1');
+    expect(result.actions).toContain('ALERT_OVERHEAT');
+  });
+  it('should not fire unmatched rules', () => {
+    const engine = new SymbolicRuleEngine();
+    engine.addRule('R1', (f) => (f.get('x') || 0) > 100, 'ACTION', 1);
+    const result = engine.evaluate(new Map([['x', 50]]));
+    expect(result.firedRules.length).toBe(0);
+  });
+});
