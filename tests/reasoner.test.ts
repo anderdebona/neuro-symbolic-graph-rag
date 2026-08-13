@@ -102,3 +102,47 @@ describe('Symbolic Rule Engine', () => {
     expect(result.firedRules.length).toBe(0);
   });
 });
+
+describe('FirstOrderLogicProver (v4.0.0)', () => {
+  it('should derive forward chaining proofs across Horn clauses', async () => {
+    const { FirstOrderLogicProver } = await import('../src/symbolic/first-order-prover.js');
+    const prover = new FirstOrderLogicProver();
+
+    prover.addFact('Mammal(Whale)');
+    prover.addRule({
+      id: 'R_MammalWarmBlooded',
+      premises: ['Mammal(Whale)'],
+      conclusion: 'WarmBlooded(Whale)',
+    });
+    prover.addRule({
+      id: 'R_WarmBloodedVertebrate',
+      premises: ['WarmBlooded(Whale)'],
+      conclusion: 'Vertebrate(Whale)',
+    });
+
+    const result = prover.prove('Vertebrate(Whale)');
+    expect(result.proved).toBe(true);
+    expect(result.proofSteps.length).toBe(2);
+  });
+});
+
+describe('KnowledgeGraphEmbeddingRanker (v4.0.0)', () => {
+  it('should score TransE triples with Euclidean translation distance', async () => {
+    const { KnowledgeGraphEmbeddingRanker } = await import('../src/symbolic/kg-embedding-ranker.js');
+    const head = [1, 2];
+    const rel = [0, 1];
+    const perfectTail = [1, 3]; // h + r = [1, 3]
+
+    const score = KnowledgeGraphEmbeddingRanker.scoreTransE(head, rel, perfectTail);
+    expect(score).toBeCloseTo(0.0, 3);
+
+    const candidates = [
+      { id: 'perfect', vector: [1, 3] },
+      { id: 'flawed', vector: [5, 5] },
+    ];
+    const ranked = KnowledgeGraphEmbeddingRanker.rankCandidates(head, rel, candidates);
+    expect(ranked[0].id).toBe('perfect');
+    expect(ranked[0].score).toBeGreaterThan(ranked[1].score);
+  });
+});
+
