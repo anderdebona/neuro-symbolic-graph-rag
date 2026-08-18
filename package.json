@@ -1,7 +1,7 @@
 {
   "name": "neuro-symbolic-graph-rag",
-  "version": "4.0.0",
-  "description": "PhD-Grade Neuro-Symbolic AI Platform Combining Knowledge Graphs, Vector RAG & Deterministic Symbolic Reasoning",
+  "version": "5.0.0",
+  "description": "PhD-Grade Neuro-Symbolic GraphRAG Engine (Abductive Logic Programming, Cross-Attention Path Reranker, TransE Embeddings & Horn Clause Deductions)",
   "main": "dist/server.js",
   "type": "module",
   "bin": {

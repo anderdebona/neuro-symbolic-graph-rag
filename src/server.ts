@@ -6,6 +6,8 @@ import { VectorEngine } from './rag/vector-engine.js';
 import { NeuroSymbolicReasoner } from './ai/reasoner.js';
 import { FirstOrderLogicProver } from './symbolic/first-order-prover.js';
 import { KnowledgeGraphEmbeddingRanker } from './symbolic/kg-embedding-ranker.js';
+import { AbductiveReasoningEngine } from './symbolic/abductive-reasoning-engine.js';
+import { CrossAttentionPathReranker } from './rag/cross-attention-path-reranker.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +28,8 @@ vectorEngine.addDocument('doc-1', 'Raft guarantees fault tolerance using a leade
 vectorEngine.addDocument('doc-2', 'State Machine Replication requires log agreement across majority nodes.', [0.7, 0.3, 0.6]);
 
 const reasoner = new NeuroSymbolicReasoner(kg, vectorEngine);
+const abductiveEngine = new AbductiveReasoningEngine();
+const crossAttentionReranker = new CrossAttentionPathReranker(0.5, 0.4, 0.1);
 
 const prover = new FirstOrderLogicProver();
 prover.addFact('LeaderElected');
@@ -54,6 +58,37 @@ app.post('/api/symbolic/prove', (req, res) => {
   res.json(proofResult);
 });
 
+app.post('/api/symbolic/abduct', (req, res) => {
+  const { observation = 'HighDatabaseLatency' } = req.body;
+  const explanations = abductiveEngine.generateExplanations(observation);
+  res.json({ observation, explanations });
+});
+
+app.post('/api/rag/rerank-paths', (req, res) => {
+  const { query = 'How does Raft guarantee StateConsistency?' } = req.body;
+  const candidatePaths = [
+    {
+      pathId: 'path-direct',
+      sourceEntity: 'Raft',
+      targetEntity: 'StateConsistency',
+      predicates: ['is_a', 'ensures'],
+      denseSimilarityScore: 0.94,
+      logicalConsistencyScore: 0.98
+    },
+    {
+      pathId: 'path-indirect',
+      sourceEntity: 'Raft',
+      targetEntity: 'StateConsistency',
+      predicates: ['replicates_log_to', 'awaits_ack_from', 'commits_entry_to'],
+      denseSimilarityScore: 0.78,
+      logicalConsistencyScore: 0.85
+    }
+  ];
+
+  const reranked = crossAttentionReranker.rerankPaths(query, candidatePaths);
+  res.json({ query, reranked });
+});
+
 app.post('/api/symbolic/transe', (req, res) => {
   const headVec = [0.8, 0.2, 0.5];
   const relVec = [0.05, 0.05, 0.05];
@@ -68,5 +103,5 @@ app.post('/api/symbolic/transe', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Neuro-Symbolic GraphRAG Engine Turbocharged on http://localhost:${PORT}`);
+  console.log(`🚀 Neuro-Symbolic GraphRAG Engine v5.0.0 on http://localhost:${PORT}`);
 });

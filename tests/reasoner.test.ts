@@ -146,3 +146,47 @@ describe('KnowledgeGraphEmbeddingRanker (v4.0.0)', () => {
   });
 });
 
+describe('AbductiveReasoningEngine (v5.0.0)', () => {
+  it('should infer most plausible abductive hypothesis for symptom observation', async () => {
+    const { AbductiveReasoningEngine } = await import('../src/symbolic/abductive-reasoning-engine.js');
+    const engine = new AbductiveReasoningEngine();
+
+    const explanations = engine.generateExplanations('HighResponseLatency');
+    expect(explanations.length).toBeGreaterThan(0);
+    expect(explanations[0].posteriorProbability).toBeGreaterThan(0.5);
+    expect(explanations[0].satisfiesIntegrityConstraints).toBe(true);
+  });
+});
+
+describe('CrossAttentionPathReranker (v5.0.0)', () => {
+  it('should rerank knowledge paths balancing dense vector similarity and symbolic logic', async () => {
+    const { CrossAttentionPathReranker } = await import('../src/rag/cross-attention-path-reranker.js');
+    const reranker = new CrossAttentionPathReranker(0.5, 0.4, 0.1);
+
+    const candidatePaths = [
+      {
+        pathId: 'path-direct',
+        sourceEntity: 'User',
+        targetEntity: 'Service',
+        predicates: ['authenticates_with'],
+        denseSimilarityScore: 0.95,
+        logicalConsistencyScore: 1.0
+      },
+      {
+        pathId: 'path-long',
+        sourceEntity: 'User',
+        targetEntity: 'Service',
+        predicates: ['connects_to', 'proxied_by', 'authenticated_at'],
+        denseSimilarityScore: 0.70,
+        logicalConsistencyScore: 0.80
+      }
+    ];
+
+    const results = reranker.rerankPaths('How does User authenticate with Service?', candidatePaths);
+    expect(results.length).toBe(2);
+    expect(results[0].pathId).toBe('path-direct');
+    expect(results[0].finalScore).toBeGreaterThan(results[1].finalScore);
+  });
+});
+
+
